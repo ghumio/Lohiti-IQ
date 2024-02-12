@@ -10,6 +10,7 @@ const TestIQ = () => {
   const [itemsPerPage] = useState(5); // Set items per page to 5
   const [answers, setAnswers] = useState({});
   const [selectedOptions, setSelectedOptions] = useState({});
+  const [score, setScore] = useState(null); // Add a new state variable for the score
 
   useEffect(() => {
     fetchData();
@@ -17,7 +18,7 @@ const TestIQ = () => {
 
   const fetchData = async () => {
     try {
-      const response = await fetch("https://lohiti-serve.onrender.com/");
+      const response = await fetch("http://localhost:5000/api/questions");
       const data = await response.json();
       setQuestions(data);
     } catch (error) {
@@ -41,9 +42,25 @@ const TestIQ = () => {
       [`${questionIndex}-page-${currentPage}`]: selectedOption,
     }));
   };
+  const sendAnswers = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/answers", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ answers: Object.values(selectedOptions) }),
+      });
+      const data = await response.json();
+      setScore(data.score); // Set the score
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    sendAnswers();
   };
 
   const checkAllQuestionsAnswered = () => {
@@ -51,6 +68,8 @@ const TestIQ = () => {
     const answeredQuestions = Object.keys(selectedOptions).length;
     if (answeredQuestions < totalQuestions) {
       alert("Please answer all the questions before submitting.");
+    } else {
+      sendAnswers(); // Call sendAnswers when all questions are answered
     }
   };
   return (
@@ -87,8 +106,7 @@ const TestIQ = () => {
           <button
             type="button"
             onClick={checkAllQuestionsAnswered}
-            className="flex bg-orange-500 text-white font-bold p-2 rounded-md m-2 
-        "
+            className="flex bg-orange-500 text-white font-bold p-2 rounded-md m-2"
           >
             Submit
           </button>
@@ -112,6 +130,7 @@ const TestIQ = () => {
             </button>
           ))}
       </div>
+      {score !== null && <div>Your score is: {score}</div>} {/* Display the score */}
       <Footer />
     </>
   );
