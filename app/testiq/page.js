@@ -18,7 +18,7 @@ const TestIQ = () => {
 
   const fetchData = async () => {
     try {
-      const response = await fetch("https://lohiti-serve.onrender.com");
+      const response = await fetch("https://lohiti-serve.onrender.com/");
       const data = await response.json();
       setQuestions(data);
     } catch (error) {
@@ -44,7 +44,7 @@ const TestIQ = () => {
   };
   const sendAnswers = async () => {
     try {
-      const response = await fetch("https://lohiti-serve.onrender.com/api/answers", {
+      const response = await fetch("https://lohiti-serve.onrender.com/api/answers/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
